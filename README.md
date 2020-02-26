@@ -16,7 +16,7 @@ __Author:__ Peter Cole
 #### `.env` requirements (where applicable)
 
 - `PORT=3000`
-- `MONGODB_URI=mongodb://localhost:27017/admin`
+- `MONGODB_URI=mongodb://localhost:27017/users`
 
 #### How to initialize/run your application (where applicable)
 
