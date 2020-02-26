@@ -34,3 +34,4 @@ __Author:__ Peter Cole
 #### UML
 <!-- Link to an image of the UML for your application and response to events -->
 - ![UML](../master/assets/auth-server-UML.jpg)
+<!-- UML from class -->
