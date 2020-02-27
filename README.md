@@ -1,6 +1,6 @@
 # auth-server
-<!-- # LAB - Class 12 -->
-__Version:__ 1.0.0  
+<!-- # LAB - Class 14 -->
+__Version:__ 1.1.0  
 __Author:__ Peter Cole
 
 ### Links and Resources
