@@ -1,42 +1,32 @@
-'use strict';
-
 // Third-party resources
-require('dotenv').config()
 const express = require('express')
-const mongoose = require('mongoose')
+const cors = require('cors')
+const morgan = require('morgan')
 
-// Prepare the Express app
+// Prepare the express app
 const app = express()
 
 // App-level middleware
+app.use(cors())
+app.use(morgan('dev'))
 app.use(express.json())
-const basicAuth = require('./middleware/basic-auth')
 
-// models
-const User = require('./models/users')
+// Routes
+const authRouter = require('./routes/authRouter')
+app.use(authRouter)
 
-// POST to /signup to sign up a user.
-// Payload looks like
-// username:String, email:String, password:String, role:String ("user" or "admin")
-app.post('/signup', async (req, res) => {
-  const newUser = new User(req.body)
-  newUser.save() // write a save() function in your User model
-    .then(user => {
-      const token = user.generateToken()
-      res.status(200).json({ token })
+// Catch-alls
+const notFound = require('./middleware/notFound')
+app.use(notFound)
+const errorHandler = require('./middleware/errorHandler')
+app.use(errorHandler)
+
+// Export the server and a start method
+module.exports = {
+  server: app,
+  start: port => {
+    app.listen(port, () => {
+      console.log(`Express server listening on port ${port}.`)
     })
-    .catch(err => res.status(403).json({ error: err.message }))
-})
-
-// POST to /signin to verify that a user can sign in
-// create a middleware called basicAuth that handles the user validation
-app.post('/signin', basicAuth, (req, res) => {
-  res.json({ message: 'success' })
-})
-
-// Start the app
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}, () => console.log('connected to mongodb'))
-app.listen(process.env.PORT || 3000, () => console.log('server up on 3000'))
+  }
+}

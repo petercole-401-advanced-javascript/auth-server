@@ -1,75 +1,62 @@
 const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
-const usersSchema = new mongoose.Schema({
+const SECRET = process.env.SECRET || 'changeme'
+
+const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  password: { type: String, require: true },
-  email: { type: String },
-  role: { type: String, required: true, default: 'user', enum: ['admin', 'user'] }
+  password: { type: String, required: true }
 })
 
-usersSchema.methods.generateToken = () => {
-  return jwt.sign({ username: this.username, email: this.email }, process.env.SECRET)
+userSchema.pre('save', async function () {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 5)
+  }
+})
+
+userSchema.methods.generateToken = function () {
+  const tokenData = {
+    id: this._id,
+    username: this.username
+  }
+  return jwt.sign(tokenData, SECRET)
 }
 
-usersSchema.statics.authenticateBasic = (username, password) => {
-  // do some kind of findOne query with mongoose to get the right user
+userSchema.statics.authenticateBasic = function (username, password) {
+  return this.findOne({ username })
+    .then(result => result && result.comparePassword(password))
+    .catch(console.error)
 }
 
-module.exports = mongoose.model('User', usersSchema)
+// authenticate bearer
+userSchema.statics.authenticateBearer = function (username, password) {
+  return this.findOne({ username })
+    .then(result => result && result.comparePassword(password))
+    .catch(console.error)
+}
 
-/*
-class Users {
-  constructor () {
-    // Our db array will look like
-    // [
-    //   {
-    //     username: "emily",
-    //     password: <gibberish>,
-    //     email: "emily@codefellows.com"
-    //   }
-    // ]
-    this.db = []
-    this.SECRET = 'my super secret key'
-  }
-  // method to list all users in the db
-  list () {
-    return this.db
-  }
-  generateToken (user) {
-    return jwt.sign(
-      { username: user.username, email: user.email },
-      this.SECRET
-    )
-  }
-  // Use async for save because we're using bcrypt asynchronously
-  // This means that this function must return a value or a promise rejection
-  async save (record) {
-    // assume that the record passed to this function has all the right pieces
-    const { username, email, password } = record
-    // if the username is already taken, reject the promise
-    if (this.db.find(u => u.username === username)) {
-      return Promise.reject(new Error(`username already taken: ${username}`))
-    } else {
-      const cryptedPassword = await bcrypt.hash(password, 5)
-      this.db.push({ username, email, password: cryptedPassword })
-      return record
+userSchema.statics.authenticateToken = async function (token) {
+  try {
+    const tokenObject = jwt.verify(token, SECRET)
+    console.log(tokenObject)
+    // if the token has a username, try to get and return that user
+    if (!tokenObject.username) {
+      return Promise.reject(new Error('Token is malformed'))
     }
-  }
-  async authenticateBasic (username, password) {
-    const user = (this.db.find(u => u.username === username))
-    if (!user) {
-      return Promise.reject(new Error('user does not exist'))
-    } else {
-      const valid = await bcrypt.compare(password, user.password)
-      if (valid) {
-        return user
-      } else {
-        return Promise.reject(new Error('wrong password'))
-      }
-    }
+    const user = await this.findOne({ username: tokenObject.username })
+    return user
+  } catch (error) {
+    return Promise.reject(error)
   }
 }
-module.exports = new Users()
-*/
+
+userSchema.methods.comparePassword = function (password) {
+  // Compare a given password against the stored hashed password
+  // If it matches, return the user instance, otherwise return null
+  return bcrypt.compare(password, this.password)
+    .then(valid => valid ? this : null)
+    .catch(console.error)
+}
+
+module.exports = mongoose.model('User', userSchema)
