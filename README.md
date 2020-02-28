@@ -20,7 +20,8 @@ __Author:__ Peter Cole
 
 #### How to initialize/run your application (where applicable)
 
-- `npm start`
+- Start server `npm run dev`
+- Start app `npm start`
 
 #### Tests
 
