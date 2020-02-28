@@ -22,7 +22,7 @@ userSchema.methods.generateToken = function () {
     id: this._id,
     username: this.username
   }
-  return jwt.sign(tokenData, SECRET, { expiresIn: '1hr' })
+  return jwt.sign(tokenData, SECRET, { expiresIn: '10000' })
 }
 
 userSchema.statics.authenticateBasic = function (username, password) {

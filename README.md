@@ -25,8 +25,7 @@ __Author:__ Peter Cole
 
 #### Tests
 
-- How do you run tests?
-  - Using `npm test app.test.js`
+- Use `npm test app.test.js` or `npm run test`
 <!-- - Any tests of note?
   - Functional server and category additions -->
 <!-- - Describe any tests that you did not complete, skipped, etc
