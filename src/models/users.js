@@ -15,12 +15,13 @@ userSchema.pre('save', async function () {
   }
 })
 
+ // add jwt timeout stuff here, expiration
 userSchema.methods.generateToken = function () {
   const tokenData = {
     id: this._id,
     username: this.username
   }
-  return jwt.sign(tokenData, SECRET)
+  return jwt.sign(tokenData, SECRET, { expiresIn: '1hr' })
 }
 
 userSchema.statics.authenticateBasic = function (username, password) {
@@ -29,14 +30,7 @@ userSchema.statics.authenticateBasic = function (username, password) {
     .catch(console.error)
 }
 
-// authenticate bearer
-userSchema.statics.authenticateBearer = function (username, password) {
-  return this.findOne({ username })
-    .then(result => result && result.comparePassword(password))
-    .catch(console.error)
-}
-
-userSchema.statics.authenticateToken = async function (token) {
+userSchema.statics.authenticateToken = async function (token) { // authenticate bearer
   try {
     const tokenObject = jwt.verify(token, SECRET)
     console.log(tokenObject)
