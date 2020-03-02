@@ -1,6 +1,6 @@
 # auth-server
-<!-- # LAB - Class 12 -->
-__Version:__ 1.0.0  
+<!-- # LAB - Class 14 -->
+__Version:__ 1.1.0  
 __Author:__ Peter Cole
 
 ### Links and Resources
@@ -16,16 +16,16 @@ __Author:__ Peter Cole
 #### `.env` requirements (where applicable)
 
 - `PORT=3000`
-- `MONGODB_URI=mongodb://localhost:27017/admin`
+- `MONGODB_URI=mongodb://localhost:27017/users`
 
 #### How to initialize/run your application (where applicable)
 
-- `npm start`
+- Start server `npm run dev`
+- Start app `npm start`
 
 #### Tests
 
-- How do you run tests?
-  - Using `npm test app.test.js`
+- Use `npm test app.test.js` or `npm run test`
 <!-- - Any tests of note?
   - Functional server and category additions -->
 <!-- - Describe any tests that you did not complete, skipped, etc
@@ -34,3 +34,4 @@ __Author:__ Peter Cole
 #### UML
 <!-- Link to an image of the UML for your application and response to events -->
 - ![UML](../master/assets/auth-server-UML.jpg)
+<!-- UML from class -->
