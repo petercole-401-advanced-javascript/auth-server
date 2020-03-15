@@ -17,8 +17,6 @@ app.use(authRouter)
 const rolesRouter = require('./routes/rolesRouter.js')
 app.use(rolesRouter)
 
-
-
 // Catch-alls
 const notFound = require('./middleware/notFound.js')
 app.use(notFound)
